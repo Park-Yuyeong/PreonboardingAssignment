@@ -16,33 +16,31 @@ class AuthAPI {
     this.client = client;
   }
 
-  async signUp(data: RegisterRequest): Promise<RegisterResponse | null> {
+  async signUp(data: RegisterRequest): Promise<RegisterResponse> {
     try {
       const path = "/register";
       const response = await this.client.post<RegisterResponse>(path, data);
 
       return response.data;
     } catch (error) {
-      console.error("Sign Up Error: ", error);
-
-      return null;
+      throw error;
     }
   }
 
-  async logIn(data: LogInRequest): Promise<LogInResponse | null> {
+  async logIn(data: LogInRequest): Promise<LogInResponse> {
     try {
       const path = "/login?expiresIn=10m";
       const response = await this.client.post<LogInResponse>(path, data);
 
+      localStorage.setItem("accessToken", response.data.accessToken);
+
       return response.data;
     } catch (error) {
-      console.error("Log In Error: ", error);
-
-      return null;
+      throw error;
     }
   }
 
-  async getUser(): Promise<User | null> {
+  async getUser(): Promise<User> {
     const accessToken = localStorage.getItem("accessToken");
 
     try {
@@ -55,13 +53,11 @@ class AuthAPI {
 
       return response.data;
     } catch (error) {
-      console.error("User Information Error: ", error);
-
-      return null;
+      throw error;
     }
   }
 
-  async updateProfile(data: ProfileRequest): Promise<ProfileResponse | null> {
+  async updateProfile(data: ProfileRequest): Promise<ProfileResponse> {
     const accessToken = localStorage.getItem("accessToken");
 
     if (accessToken) {
@@ -76,14 +72,10 @@ class AuthAPI {
 
         return response.data;
       } catch (error) {
-        console.error("Profile Update Error: ", error);
-
-        return null;
+        throw error;
       }
     } else {
-      console.error("Access token is missing.");
-
-      return null;
+      throw Error("로그인 후 이용하실 수 있는 서비스입니다.");
     }
   }
 }

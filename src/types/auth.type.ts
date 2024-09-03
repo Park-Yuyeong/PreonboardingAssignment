@@ -40,3 +40,7 @@ export type ProfileResponse = {
   message: string;
   success: string;
 };
+
+export type ErrorResponse = {
+  message: string;
+};
