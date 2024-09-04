@@ -3,12 +3,14 @@ import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../apis/api";
+import { useToast } from "../../providers/ToastProvider";
 import { ErrorResponse, LogInRequest } from "../../types/auth.type";
 import Button from "../common/Button";
 import Input from "../common/Input";
 
 const LogInForm = () => {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [userId, setUserId] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -16,11 +18,16 @@ const LogInForm = () => {
   const { mutate: logIn } = useMutation({
     mutationFn: (data: LogInRequest) => api.auth.logIn(data),
     onSuccess: () => {
-      alert("로그인에 성공했습니다!");
+      toast.on({ label: "로그인에 성공했습니다!" });
       navigate("/my-page");
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      alert(error.response?.data.message);
+      toast.on({
+        label:
+          error.response?.data.message ||
+          "로그인에 실패했습니다. 올바른 아이디와 비밀번호를 입력해주세요.",
+        state: "danger",
+      });
     },
   });
 
@@ -34,7 +41,7 @@ const LogInForm = () => {
   };
 
   return (
-    <form className="flex flex-col gap-y-6" onSubmit={handleSubmitLogInForm}>
+    <form className="flex flex-col gap-y-8" onSubmit={handleSubmitLogInForm}>
       <div className="flex flex-col gap-y-4">
         <Input
           type="text"
