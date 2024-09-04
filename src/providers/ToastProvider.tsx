@@ -17,7 +17,7 @@ const ToastProvider = ({ children }: PropsWithChildren) => {
     on: (message: ToastType) => {
       setToast(message);
 
-      setTimeout(() => setToast(null), 1300);
+      setTimeout(() => setToast(null), 1500);
     },
   };
 
