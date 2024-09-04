@@ -44,3 +44,10 @@ export type ProfileResponse = {
 export type ErrorResponse = {
   message: string;
 };
+
+export type AuthStoreType = {
+  nickname: string;
+  avatar: string;
+  setNickname: (nickname: string) => void;
+  setAvatar: (avatar: string) => void;
+};

@@ -4,12 +4,18 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../apis/api";
 import { useToast } from "../../providers/ToastProvider";
-import { ErrorResponse, LogInRequest } from "../../types/auth.type";
+import useAuthStore from "../../store/useAuthStore";
+import {
+  ErrorResponse,
+  LogInRequest,
+  LogInResponse,
+} from "../../types/auth.type";
 import Button from "../common/Button";
 import Input from "../common/Input";
 
 const LogInForm = () => {
   const navigate = useNavigate();
+  const { setNickname, setAvatar } = useAuthStore();
   const toast = useToast();
 
   const [userId, setUserId] = useState<string>("");
@@ -17,7 +23,9 @@ const LogInForm = () => {
 
   const { mutate: logIn } = useMutation({
     mutationFn: (data: LogInRequest) => api.auth.logIn(data),
-    onSuccess: () => {
+    onSuccess: (response: LogInResponse) => {
+      setNickname(response.nickname);
+      setAvatar(response.avatar ?? "");
       toast.on({ label: "로그인에 성공했습니다!" });
       navigate("/my-page");
     },
