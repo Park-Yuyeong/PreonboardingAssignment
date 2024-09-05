@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError, isAxiosError } from "axios";
 import { ChangeEvent, useRef, useState } from "react";
 import { FiUser } from "react-icons/fi";
 import { RiImageEditLine } from "react-icons/ri";
@@ -6,7 +7,11 @@ import { useNavigate } from "react-router-dom";
 import api from "../../apis/api";
 import { useToast } from "../../providers/ToastProvider";
 import useAuthStore from "../../store/useAuthStore";
-import { ProfileRequest } from "../../types/auth.type";
+import {
+  ErrorResponse,
+  ProfileRequest,
+  ProfileResponse,
+} from "../../types/auth.type";
 import Button from "../common/Button";
 import Input from "../common/Input";
 
@@ -22,12 +27,50 @@ const Profile = () => {
 
   const { mutate: updateProfile } = useMutation({
     mutationFn: (data: ProfileRequest) => api.auth.updateProfile(data),
-    onSuccess: () => {
+    onSuccess: (response: ProfileResponse) => {
+      setNickname(response.nickname);
+      setAvatar(response.avatar ?? avatar);
+
+      setIsEditMode(false);
+
       toast.on({ label: "내 정보를 수정했습니다!" });
+    },
+    onError: (error: AxiosError<ErrorResponse> | Error) => {
+      if (isAxiosError(error)) {
+        toast.on({
+          label: error.response?.data.message || "내 정보 수정에 실패했습니다.",
+          state: "danger",
+        });
+      } else {
+        toast.on({ label: error.message, state: "danger" });
+      }
+
+      setIsEditMode(true);
     },
   });
 
-  const handleChangeProfile = () => {};
+  const showProfilePreview = (): void => {
+    const preview = imgRef.current?.files?.[0];
+
+    if (preview) {
+      const reader = new FileReader();
+      reader.readAsDataURL(preview);
+      reader.onload = () => {
+        setImgPath(String(reader.result));
+      };
+    }
+  };
+
+  const handleClickEditButton = (): void => {
+    if (isEditMode) {
+      updateProfile({
+        nickname: newNickname,
+        avatar: imgRef.current?.files?.[0],
+      });
+    } else {
+      setIsEditMode(!isEditMode);
+    }
+  };
 
   const handleClickLogOutButton = (): void => {
     const check = confirm("로그아웃을 진행하시겠습니까?");
@@ -48,16 +91,20 @@ const Profile = () => {
         {imgPath.length === 0 ? (
           <FiUser color="white" size="80%" />
         ) : (
-          <img src={imgPath} alt="프로필 이미지" className="object-contain" />
+          <img
+            src={imgPath}
+            alt="프로필 이미지"
+            className="object-cover w-full h-full rounded-full"
+          />
         )}
         {isEditMode && (
-          <label className="absolute bottom-1 right-1 bg-black border border-white p-1.5 rounded-full cursor-pointer hover:scale-105 transition">
+          <label className="absolute bottom-1 right-1 bg-black border border-white p-1.5 rounded-full cursor-pointer hover:scale-110 transition">
             <RiImageEditLine color="white" />
             <input
               type="file"
               className="hidden"
               ref={imgRef}
-              onChange={handleChangeProfile}
+              onChange={showProfilePreview}
             />
           </label>
         )}
@@ -76,7 +123,7 @@ const Profile = () => {
           <h4 className="font-semibold text-lg px-1">{nickname}</h4>
         )}
         <div className="flex gap-x-2">
-          <Button type="button" onClick={() => setIsEditMode(!isEditMode)}>
+          <Button type="button" onClick={handleClickEditButton}>
             {isEditMode ? "수정 완료하기" : "내 정보 수정하기"}
           </Button>
           <Button

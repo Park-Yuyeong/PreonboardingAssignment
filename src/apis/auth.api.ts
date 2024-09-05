@@ -29,7 +29,7 @@ class AuthAPI {
 
   async logIn(data: LogInRequest): Promise<LogInResponse> {
     try {
-      const path = "/login?expiresIn=10m";
+      const path = "/login";
       const response = await this.client.post<LogInResponse>(path, data);
 
       localStorage.setItem("accessToken", response.data.accessToken);

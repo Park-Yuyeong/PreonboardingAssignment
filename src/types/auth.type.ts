@@ -30,7 +30,7 @@ export type User = {
 };
 
 export type ProfileRequest = {
-  avatar: File;
+  avatar: File | undefined;
   nickname: string;
 };
 

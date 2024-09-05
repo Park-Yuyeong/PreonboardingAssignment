@@ -26,6 +26,7 @@ const LogInForm = () => {
     onSuccess: (response: LogInResponse) => {
       setNickname(response.nickname);
       setAvatar(response.avatar ?? "");
+
       toast.on({ label: "로그인에 성공했습니다!" });
       navigate("/my-page");
     },
