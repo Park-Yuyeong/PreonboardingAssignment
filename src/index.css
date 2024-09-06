@@ -26,3 +26,36 @@ body {
     transform: rotate(360deg);
   }
 }
+
+.todo-loader {
+  color: white;
+  display: inline-block;
+  position: relative;
+  font-size: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+.todo-loader::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: currentColor;
+  position: absolute;
+  bottom: 8px;
+  right: -5px;
+  box-sizing: border-box;
+  animation: ani-loader 1s linear infinite;
+}
+
+@keyframes ani-loader {
+  0% {
+    box-shadow: 10px 0 rgba(255, 255, 255, 0), 20px 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow: 10px 0 white, 20px 0 rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 10px 0 white, 20px 0 white;
+  }
+}

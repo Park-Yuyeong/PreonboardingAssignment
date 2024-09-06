@@ -6,7 +6,6 @@ import {
   useGetUser,
   useUpdateProfile,
 } from "../../hooks/queries/useAuthQueries";
-import ErrorPage from "../../pages/ErrorPage";
 
 import useModal from "../../store/useModal";
 import useToast from "../../store/useToast";
@@ -79,13 +78,10 @@ const Profile = () => {
 
   if (isLoading) return <Loader />;
 
-  if (isError)
-    return (
-      <ErrorPage message="회원 정보를 불러오는 데 실패했습니다. 로그인 후 이용해주세요." />
-    );
+  if (isError) navigate("/404");
 
   return (
-    <div className="flex items-center gap-x-14">
+    <div className="flex items-center gap-x-14 pb-4 border-b border-white">
       <div className="relative flex items-center justify-center border-2 border-white rounded-full w-40 h-40 aspect-square">
         {!imgPath ? (
           <FiUser color="white" size="80%" />

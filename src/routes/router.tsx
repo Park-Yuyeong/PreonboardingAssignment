@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import ErrorPage from "../pages/ErrorPage";
 import HomePage from "../pages/HomePage";
 import LogInPage from "../pages/LogInPage";
 import MyPage from "../pages/MyPage";
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
         path: "/my-page",
       },
     ],
+  },
+  {
+    path: "/404",
+    element: <ErrorPage />,
   },
 ]);
 
