@@ -1,35 +1,20 @@
-import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../apis/api";
-import { useToast } from "../../providers/ToastProvider";
-import { ErrorResponse, RegisterRequest } from "../../types/auth.type";
+import { useSignUp } from "../../hooks/queries/useAuthQueries";
+import useToast from "../../store/useToast";
 import Button from "../common/Button";
 import Input from "../common/Input";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
-  const toast = useToast();
+  const { setToast } = useToast();
+
+  const { mutate: signUp } = useSignUp();
 
   const [userId, setUserId] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-
-  const { mutate: signUp } = useMutation({
-    mutationFn: (data: RegisterRequest) => api.auth.signUp(data),
-    onSuccess: () => {
-      toast.on({ label: "회원가입을 완료했습니다. 로그인을 진행해주세요!" });
-      navigate("/log-in");
-    },
-    onError: (error: AxiosError<ErrorResponse>) => {
-      toast.on({
-        label: error.response?.data.message || "회원가입에 실패했습니다.",
-        state: "danger",
-      });
-    },
-  });
 
   const handleSubmitSignUpForm = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -37,7 +22,7 @@ const SignUpForm = () => {
     if (password === confirmPassword) {
       signUp({ id: userId, nickname, password });
     } else {
-      toast.on({
+      setToast({
         label: "비밀번호와 비밀번호 확인이 일치하지 않습니다.",
         state: "danger",
       });

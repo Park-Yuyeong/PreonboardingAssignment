@@ -1,44 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../apis/api";
-import { useToast } from "../../providers/ToastProvider";
-import useAuthStore from "../../store/useAuthStore";
-import {
-  ErrorResponse,
-  LogInRequest,
-  LogInResponse,
-} from "../../types/auth.type";
+import { useLogIn } from "../../hooks/queries/useAuthQueries";
 import Button from "../common/Button";
 import Input from "../common/Input";
 
 const LogInForm = () => {
   const navigate = useNavigate();
-  const { setNickname, setAvatar } = useAuthStore();
-  const toast = useToast();
+
+  const { mutate: logIn } = useLogIn();
 
   const [userId, setUserId] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-
-  const { mutate: logIn } = useMutation({
-    mutationFn: (data: LogInRequest) => api.auth.logIn(data),
-    onSuccess: (response: LogInResponse) => {
-      setNickname(response.nickname);
-      setAvatar(response.avatar ?? "");
-
-      toast.on({ label: "로그인에 성공했습니다!" });
-      navigate("/my-page");
-    },
-    onError: (error: AxiosError<ErrorResponse>) => {
-      toast.on({
-        label:
-          error.response?.data.message ||
-          "로그인에 실패했습니다. 올바른 아이디와 비밀번호를 입력해주세요.",
-        state: "danger",
-      });
-    },
-  });
 
   const handleSubmitLogInForm = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();

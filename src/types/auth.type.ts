@@ -38,7 +38,7 @@ export type ProfileResponse = {
   avatar: string;
   nickname: string;
   message: string;
-  success: string;
+  success: boolean;
 };
 
 export type ErrorResponse = {
