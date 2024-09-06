@@ -76,7 +76,7 @@ const Profile = () => {
     });
   };
 
-  if (isLoading) return <Loader />;
+  if (isLoading || !user) return <Loader />;
 
   if (isError) navigate("/404");
 
